@@ -15,7 +15,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Crear Servicio")),
+      appBar: AppBar(title: const Text("Agendar Servicio")),
       body: Form(
         key: _formKey,
         child: Padding(
