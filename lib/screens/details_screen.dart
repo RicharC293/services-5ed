@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:services_app/models/service_model.dart';
 import 'package:services_app/screens/create_service_screen.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -7,6 +8,7 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final service = ModalRoute.of(context)!.settings.arguments as ServiceModel;
     return Scaffold(
       appBar: AppBar(title: const Text("Detalles del Servicio")),
       body: Padding(
@@ -16,26 +18,23 @@ class DetailsScreen extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                "assets/image_general.png",
+              child: Image.network(
+                service.banner.formats["large"]!.url,
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              "Nombre del Servicio",
+            Text(
+              service.name,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Descripción detallada del servicio. Aquí puedes incluir información relevante sobre el servicio ofrecido.",
-              style: TextStyle(fontSize: 16),
-            ),
+            Text(service.description, style: TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            const Text(
-              "Precio: \$100",
+            Text(
+              "Precio: \$${service.price.toStringAsFixed(2)}",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
@@ -45,7 +44,11 @@ class DetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: FilledButton(
           onPressed: () {
-            Navigator.pushNamed(context, CreateServiceScreen.routeName);
+            Navigator.pushNamed(
+              context,
+              CreateServiceScreen.routeName,
+              arguments: service,
+            );
           },
           child: const Text("Agendar Servicio"),
         ),

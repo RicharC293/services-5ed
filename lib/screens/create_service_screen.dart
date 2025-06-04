@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:services_app/models/service_model.dart';
+import 'package:services_app/screens/home_screen.dart';
+import 'package:services_app/services/api.dart';
 
 class CreateServiceScreen extends StatefulWidget {
   const CreateServiceScreen({super.key});
@@ -11,6 +14,13 @@ class CreateServiceScreen extends StatefulWidget {
 class _CreateServiceScreenState extends State<CreateServiceScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _dateTimeController = TextEditingController();
+
+  bool _isLoading = false;
+
+  String? _name;
+  String? _address;
+  DateTime? _dateTime;
+  String? _message;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +48,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                   }
                   return null;
                 },
+                onSaved: (newValue) {
+                  _name = newValue;
+                },
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -54,6 +67,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                     return 'Por favor ingresa tu dirección';
                   }
                   return null;
+                },
+                onSaved: (newValue) {
+                  _address = newValue;
                 },
               ),
               const SizedBox(height: 24),
@@ -102,6 +118,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                     }
                   });
                 },
+                onSaved: (newValue) {
+                  _dateTime = DateTime.parse(newValue!);
+                },
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -114,6 +133,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
                 maxLines: 5,
+                onSaved: (newValue) {
+                  _message = newValue;
+                },
               ),
               const SizedBox(height: 24),
               const Text(
@@ -127,16 +149,50 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FilledButton(
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              // Logic to handle form submission
+          onPressed: () async {
+            if (_formKey.currentState == null ||
+                !_formKey.currentState!.validate()) {
+              return;
+            }
+            final service =
+                ModalRoute.of(context)?.settings.arguments as ServiceModel;
+            _formKey.currentState?.save();
+
+            try {
+              if (_isLoading) return;
+              setState(() {
+                _isLoading = true;
+              });
+              await Api().createTicket(
+                name: _name!,
+                address: _address!,
+                date: _dateTime!,
+                comment: _message,
+                serviceDocumentId: service.documentId,
+              );
+              if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Servicio creado exitosamente')),
               );
-              Navigator.pop(context); // Navigate back after creation
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                HomeScreen.routeName,
+                (_) => false,
+              );
+            } catch (err) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error al crear el servicio: $err')),
+              );
+            } finally {
+              setState(() {
+                _isLoading = false;
+              });
             }
           },
-          child: const Text("Crear Servicio"),
+          child: _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text("Crear Servicio"),
         ),
       ),
     );
