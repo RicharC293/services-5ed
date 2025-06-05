@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:services_app/notifiers/services_notifier.dart';
+import 'package:services_app/notifiers/theme_notifier.dart';
 import 'package:services_app/screens/home_screen.dart';
 import 'package:services_app/utils/router.dart';
 
@@ -9,10 +12,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Servicios',
-      initialRoute: HomeScreen.routeName,
-      routes: router,
+    return MultiProvider(
+      providers: [
+        // Aquí puedes agregar otros providers si es necesario
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => ServicesNotifier()),
+      ],
+      builder: (context, _) => MaterialApp(
+        title: 'Servicios',
+        initialRoute: HomeScreen.routeName,
+        routes: router,
+        theme: context.watch<ThemeNotifier>().isDarkMode
+            ? ThemeData.dark()
+            : ThemeData.light(),
+      ),
     );
   }
 }

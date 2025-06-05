@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:services_app/models/service_model.dart';
+import 'package:services_app/notifiers/theme_notifier.dart';
 import 'package:services_app/screens/create_service_screen.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -10,7 +12,23 @@ class DetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final service = ModalRoute.of(context)!.settings.arguments as ServiceModel;
     return Scaffold(
-      appBar: AppBar(title: const Text("Detalles del Servicio")),
+      appBar: AppBar(
+        title: const Text("Detalles del Servicio"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              context.watch<ThemeNotifier>().isDarkMode
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onPressed: () {
+              context.read<ThemeNotifier>().isDarkMode = !context
+                  .read<ThemeNotifier>()
+                  .isDarkMode;
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
