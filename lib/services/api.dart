@@ -31,7 +31,7 @@ class Api {
     required String serviceDocumentId,
   }) async {
     try {
-      final response = await _dio.post(
+      await _dio.post(
         '/tickets',
         data: {
           'data': {
