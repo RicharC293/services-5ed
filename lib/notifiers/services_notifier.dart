@@ -5,6 +5,9 @@ import 'package:services_app/services/api.dart';
 enum ServiceStatus { loading, success, error }
 
 class ServicesNotifier with ChangeNotifier {
+  ServicesNotifier({Api? api}) : _api = api ?? Api();
+
+  final Api _api;
   List<ServiceModel> _services = [];
   ServiceStatus _status = ServiceStatus.loading;
 
@@ -15,7 +18,7 @@ class ServicesNotifier with ChangeNotifier {
   Future<void> fetchServices() async {
     try {
       _status = ServiceStatus.loading;
-      final services = await Api().getServices();
+      final services = await _api.getServices();
       _services = services;
       _status = ServiceStatus.success;
     } catch (err) {

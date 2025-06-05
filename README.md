@@ -26,10 +26,16 @@ Aplicación Flutter que lista servicios obtenidos de una API y permite agendar u
    ```bash
    flutter run
    ```
-4. (Opcional) Ejecuta las pruebas con:
+4. (Opcional) Ejecuta las pruebas unitarias y de widgets con:
 
    ```bash
    flutter test
+   ```
+
+5. (Opcional) Para las pruebas de integración usa:
+
+   ```bash
+   flutter test integration_test
    ```
 
 ## Estructura del proyecto
