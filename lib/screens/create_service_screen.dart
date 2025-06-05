@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:services_app/models/service_model.dart';
+import 'package:services_app/notifiers/ticket_notifier.dart';
 import 'package:services_app/screens/home_screen.dart';
-import 'package:services_app/services/api.dart';
 
 class CreateServiceScreen extends StatefulWidget {
   const CreateServiceScreen({super.key});
@@ -15,7 +16,6 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _dateTimeController = TextEditingController();
 
-  bool _isLoading = false;
 
   String? _name;
   String? _address;
@@ -146,54 +146,56 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FilledButton(
-          onPressed: () async {
-            if (_formKey.currentState == null ||
-                !_formKey.currentState!.validate()) {
-              return;
-            }
-            final service =
-                ModalRoute.of(context)?.settings.arguments as ServiceModel;
-            _formKey.currentState?.save();
+      bottomNavigationBar: Selector<TicketNotifier, TicketStatus>(
+        // Usamos Selector para escuchar solo cambios en el estado del
+        // TicketNotifier. De esta forma evitamos llamar a context.watch y
+        // limitamos las reconstrucciones al botón.
+        selector: (_, notifier) => notifier.status,
+        builder: (context, status, _) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FilledButton(
+              onPressed: () async {
+                if (_formKey.currentState == null ||
+                    !_formKey.currentState!.validate()) {
+                  return;
+                }
+                final service =
+                    ModalRoute.of(context)?.settings.arguments as ServiceModel;
+                _formKey.currentState?.save();
 
-            try {
-              if (_isLoading) return;
-              setState(() {
-                _isLoading = true;
-              });
-              await Api().createTicket(
-                name: _name!,
-                address: _address!,
-                date: _dateTime!,
-                comment: _message,
-                serviceDocumentId: service.documentId,
-              );
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Servicio creado exitosamente')),
-              );
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                HomeScreen.routeName,
-                (_) => false,
-              );
-            } catch (err) {
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al crear el servicio: $err')),
-              );
-            } finally {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          },
-          child: _isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
-              : const Text("Crear Servicio"),
-        ),
+                final notifier = context.read<TicketNotifier>();
+                try {
+                  if (notifier.status == TicketStatus.loading) return;
+                  await notifier.createTicket(
+                    name: _name!,
+                    address: _address!,
+                    date: _dateTime!,
+                    comment: _message,
+                    serviceDocumentId: service.documentId,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Servicio creado exitosamente')),
+                  );
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    HomeScreen.routeName,
+                    (_) => false,
+                  );
+                } catch (err) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al crear el servicio: $err')),
+                  );
+                }
+              },
+              child: status == TicketStatus.loading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Crear Servicio"),
+            ),
+          );
+        },
       ),
     );
   }
