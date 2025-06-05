@@ -1,17 +1,45 @@
-# services_app
+# Services App
 
-A new Flutter project.
+Aplicación Flutter que lista servicios obtenidos de una API y permite agendar uno mediante un formulario.
 
-## Getting Started
+## ¿Qué hace?
 
-This project is a starting point for a Flutter application.
+- Obtiene un catálogo de servicios desde un API REST.
+- Muestra detalles de cada servicio y su imagen.
+- Permite programar un servicio completando un formulario.
+- Cuenta con un interruptor para cambiar entre tema claro y oscuro.
 
-A few resources to get you started if this is your first Flutter project:
+## Requisitos
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter 3.8 o superior instalado en tu entorno.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# services-5ed
+## Instrucciones para levantar el proyecto
+
+1. Clona este repositorio.
+2. Desde la raíz, instala las dependencias ejecutando:
+
+   ```bash
+   flutter pub get
+   ```
+3. Conecta un emulador o dispositivo y arranca la aplicación con:
+
+   ```bash
+   flutter run
+   ```
+4. (Opcional) Ejecuta las pruebas con:
+
+   ```bash
+   flutter test
+   ```
+
+## Estructura del proyecto
+
+El código principal reside en `lib/` y se organiza de la siguiente manera:
+
+- `models/`: clases de datos como `ServiceModel`.
+- `services/`: llamadas al API y lógica de obtención de datos.
+- `screens/`: pantallas que componen la interfaz de usuario.
+- `notifiers/`: proveedores `ChangeNotifier` para manejar el estado.
+- `utils/`: utilidades como el sistema de rutas.
+
+Las pruebas se ubican en el directorio `test/` y los archivos específicos de cada plataforma se encuentran en `android/`, `ios/`, `linux/`, `macos/` y `windows/`.
