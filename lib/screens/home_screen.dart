@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:services_app/notifiers/services_notifier.dart';
 import 'package:services_app/screens/details_screen.dart';
+import 'package:services_app/screens/qr_scan_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, QRScanScreen.routeName);
+        },
+        child: const Icon(Icons.qr_code_scanner),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
