@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:services_app/models/service_model.dart';
+import 'package:services_app/models/ticket_model.dart';
 
 class Api {
   final _dio = Dio(
@@ -46,5 +47,14 @@ class Api {
     } catch (err) {
       throw Exception('Error creating ticket: $err');
     }
+  }
+
+  Future<TicketModel> getTicket(String id) async {
+    final response = await _dio.get(
+      "/tickets/$id",
+      queryParameters: {"populate": "*"},
+    );
+
+    return TicketModel.fromJson(response.data);
   }
 }
